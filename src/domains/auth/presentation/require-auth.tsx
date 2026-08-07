@@ -10,9 +10,18 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.replace("/login");
+    if (status !== "unauthenticated") {
+      return;
     }
+
+    // Garante limpeza de cookie inválido antes de ir ao login.
+    void fetch("/api/auth/clear", {
+      method: "POST",
+      credentials: "same-origin",
+    }).finally(() => {
+      router.replace("/login");
+      router.refresh();
+    });
   }, [status, router]);
 
   if (status === "loading") {

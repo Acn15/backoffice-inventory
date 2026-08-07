@@ -17,13 +17,15 @@ export function proxy(request: NextRequest) {
 
   const isPublicPath = PUBLIC_PATHS.has(pathname);
 
+  // /login sempre acessível: cookies podem estar expirados/inválidos
+  // e redirecionar para o dashboard criava um loop de "não autorizado".
   if (!hasSession && !isPublicPath && pathname !== "/") {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (hasSession && (pathname === "/login" || pathname === "/")) {
+  if (hasSession && pathname === "/") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

@@ -34,6 +34,11 @@ export function LoginForm() {
     setSubmitting(true);
 
     try {
+      // Limpa cookie velho antes de tentar logar de novo.
+      await fetch("/api/auth/clear", {
+        method: "POST",
+        credentials: "same-origin",
+      });
       await login(email, password);
       router.replace("/dashboard");
       router.refresh();
